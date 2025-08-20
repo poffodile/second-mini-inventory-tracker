@@ -5,22 +5,22 @@
     <thead>
       <tr>
         <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('productId')">Product ID</th>
-        <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('quantity')">Quantity</th>
-        <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('locationId')">Location</th>
+        <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('qty')">Quantity</th>
+        <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('toLocationId')">Location</th>
         <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('timestamp')">Timestamp</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let entry of sortedItems" class="hover:bg-gray-50 text-align:left 4px">
+      <tr *ngFor="let entry of sortedItems" class="hover:bg-gray-50">
         <td class="border px-4 py-2">{{ entry.productId }}</td>
-        <td class="border px-4 py-2">{{ entry.quantity }}</td>
-        <td class="border px-4 py-2">{{ entry.locationId }}</td>
+        <td class="border px-4 py-2">{{ entry.qty }}</td>
+        <td class="border px-4 py-2">{{ entry.toLocationId }}</td>
         <td class="border px-4 py-2">{{ entry.timestamp | date : 'medium' }}</td>
       </tr>
-
-      <p *ngIf="sortedItems.length === 0" class="text-gray-500 mt-4">
-        No stock has been received yet.
-      </p>
     </tbody>
   </table>
+
+  <p *ngIf="sortedItems.length === 0" class="text-gray-500 mt-4">
+    No stock has been received yet.
+  </p>
 </div>

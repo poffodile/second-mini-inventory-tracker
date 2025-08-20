@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data';
-import { ReceivedItem } from '../../interfaceTypes/ReceivedItem';
 import { Movement } from '../../interfaceTypes/Movement';
 
 @Component({
@@ -12,21 +11,21 @@ import { Movement } from '../../interfaceTypes/Movement';
   styleUrls: ['./stockReceived.css'],
 })
 export class StockReceived implements OnInit {
-  sortedItems: ReceivedItem[] = [];
+  sortedItems: Movement[] = [];
   receivedItems: Movement[] = [];
 
-  sortField: keyof ReceivedItem | '' = '';
+  sortField: keyof Movement | '' = '';
   sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
-    const allMovements = this.dataService.getData<Movement[]>('movements');
+    const allMovements = this.dataService.getData<Movement>('movements');
     this.receivedItems = allMovements.filter((m) => m.type === 'RECEIPT');
     this.sortedItems = [...this.receivedItems];
   }
 
-  sort(field: keyof ReceivedItem): void {
+  sort(field: keyof Movement): void {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
