@@ -16,6 +16,8 @@ export class Receive implements OnInit {
   products: any[] = [];
   locations: any[] = [];
   receivedItems: ReceivedItem[] = [];
+  summarySortField: keyof ReceivedItem | '' = '';
+  summarySortDirection: 'asc' | 'desc' = 'asc';
 
   productId: string = '';
   quantity: number = 1;
@@ -97,5 +99,28 @@ export class Receive implements OnInit {
     this.productId = '';
     this.quantity = 1;
     this.locationId = '';
+  }
+
+  sortSummary(field: keyof ReceivedItem): void {
+    if (this.summarySortField === field) {
+      this.summarySortDirection = this.summarySortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.summarySortField = field;
+      this.summarySortDirection = 'asc';
+    }
+
+    this.receivedItems.sort((a, b) => {
+      const aValue = a[field];
+      const bValue = b[field];
+
+      if (aValue == null || bValue == null) return 0;
+
+      const aStr = aValue.toString().toLowerCase();
+      const bStr = bValue.toString().toLowerCase();
+
+      if (aStr < bStr) return this.summarySortDirection === 'asc' ? -1 : 1;
+      if (aStr > bStr) return this.summarySortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
   }
 }

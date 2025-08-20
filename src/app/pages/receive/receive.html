@@ -58,10 +58,10 @@
   <table class="min-w-full border border-gray-300 divide-y divide-gray-200">
     <thead class="bg-gray-100">
       <tr>
-        <th class="px-4 py-2">Product ID</th>
-        <th class="px-4 py-2">Quantity</th>
-        <th class="px-4 py-2">Location</th>
-        <th class="px-4 py-2">Timestamp</th>
+        <th class="px-4 py-2 cursor-pointer" (click)="sortSummary('productId')">Product ID</th>
+        <th class="px-4 py-2 cursor-pointer" (click)="sortSummary('quantity')">Quantity</th>
+        <th class="px-4 py-2 cursor-pointer" (click)="sortSummary('locationId')">Location</th>
+        <th class="px-4 py-2 cursor-pointer" (click)="sortSummary('timestamp')">Timestamp</th>
       </tr>
     </thead>
     <tbody>
