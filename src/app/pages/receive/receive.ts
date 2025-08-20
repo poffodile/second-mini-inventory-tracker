@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data';
 import { ReceivedItem } from '../../interfaceTypes/ReceivedItem';
+import { Movement } from '../../interfaceTypes/Movement';
 
 @Component({
   selector: 'app-receive',
@@ -25,22 +26,68 @@ export class Receive implements OnInit {
   ngOnInit(): void {
     this.products = this.dataService.getData('products') || [];
     this.locations = this.dataService.getData('locations') || [];
+
+    // Preload summary from receipt movements so persisted history appears
+    const movements = this.dataService.getData<Movement>('movements') || [];
+    const receipts = movements.filter((m) => m.type === 'RECEIPT');
+    this.receivedItems = receipts.map((m) => ({
+      productId: m.productId,
+      quantity: m.qty,
+      locationId: m.toLocationId || '',
+      timestamp: m.timestamp,
+      toLocationId: m.toLocationId || '',
+      fromLocationId: m.fromLocationId,
+      qty: m.qty,
+    }));
   }
 
   submitForm(): void {
-    const newEntry: ReceivedItem = {
+    const now = new Date().toISOString();
+
+    // 1) Append a movement entry (so Stock Received page shows it)
+    const newMovement: Movement = {
+      id: 'M' + Date.now(),
+      type: 'RECEIPT',
+      productId: this.productId,
+      toLocationId: this.locationId,
+      qty: this.quantity,
+      ref: 'RECEIVE',
+      timestamp: now,
+    };
+    const movements = this.dataService.getData<Movement>('movements') || [];
+    movements.push(newMovement);
+    this.dataService.setData('movements', movements);
+
+    // 2) Update stock ledger totals (aggregate by product+location)
+    const ledger: any[] = this.dataService.getData('stockLedger') || [];
+    const idx = ledger.findIndex(
+      (e) => e.productId === this.productId && e.locationId === this.locationId
+    );
+    if (idx !== -1) {
+      ledger[idx] = {
+        ...ledger[idx],
+        qty: (ledger[idx].qty || 0) + this.quantity,
+        updatedAt: now,
+      };
+    } else {
+      ledger.push({
+        productId: this.productId,
+        locationId: this.locationId,
+        qty: this.quantity,
+        updatedAt: now,
+      });
+    }
+    this.dataService.setData('stockLedger', ledger);
+
+    // 3) Immediately reflect in the on-page summary
+    this.receivedItems.unshift({
       productId: this.productId,
       quantity: this.quantity,
       locationId: this.locationId,
-      timestamp: new Date().toISOString(),
+      timestamp: now,
       toLocationId: this.locationId,
-      fromLocationId: undefined,
       qty: this.quantity,
-    };
-
-    const ledger: ReceivedItem[] = this.dataService.getData('stockLedger') || [];
-    ledger.push(newEntry);
-    this.dataService.setData('stockLedger', ledger);
+    });
 
     alert('Goods received and recorded!');
     this.resetForm();
