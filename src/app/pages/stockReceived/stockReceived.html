@@ -1,54 +1,40 @@
 <div class="p-6">
   <h1 class="text-2xl font-bold mb-4">Stock Received Log</h1>
-  <div class="mb-4">
-    <input
-      type="text"
-      [(ngModel)]="filterText"
-      (ngModelChange)="applyFilters()"
-      placeholder="Filter by product, location, qty, or time"
-      class="border px-3 py-2 w-full max-w-md"
-    />
-    <div class="mt-3 flex flex-wrap gap-3 items-center">
-      <label class="text-sm">Sort by:</label>
-      <select class="border px-2 py-1" [ngModel]="sortField" (ngModelChange)="onSortFieldChange($event)">
-        <option [ngValue]="''">None</option>
-        <option [ngValue]="'productId'">Product ID</option>
-        <option [ngValue]="'qty'">Quantity</option>
-        <option [ngValue]="'toLocationId'">Location</option>
-        <option [ngValue]="'timestamp'">Timestamp</option>
-      </select>
-
-      <select class="border px-2 py-1" [ngModel]="sortDirection" (ngModelChange)="onSortDirectionChange($event)">
-        <option [ngValue]="'asc'">Ascending</option>
-        <option [ngValue]="'desc'">Descending</option>
-      </select>
-
-      <button type="button" (click)="clearFilters()" class="border px-3 py-2 rounded bg-gray-100 hover:bg-gray-200">
-        Clear
-      </button>
-    </div>
+  <div class="mb-4 flex items-center gap-3">
+    <input pInputText type="text" [(ngModel)]="filterText" (input)="dt.filterGlobal(filterText, 'contains')" placeholder="Search..." class="w-full max-w-md" />
+    <button type="button" (click)="clearFilters(); dt.clear()" class="border px-3 py-2 rounded bg-gray-100 hover:bg-gray-200">Clear</button>
   </div>
 
-  <table class="table-auto w-full border border-collapse">
-    <thead>
+  <p-table #dt [value]="receivedItems" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,50]" [sortMode]="'multiple'" [resizableColumns]="true" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}">
+    <ng-template pTemplate="header">
       <tr>
-        <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('productId')">Product ID</th>
-        <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('qty')">Quantity</th>
-        <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('toLocationId')">Location</th>
-        <th class="px-4 py-2 text-left cursor-pointer" (click)="sort('timestamp')">Timestamp</th>
+        <th pSortableColumn="productId">Product ID <p-sortIcon field="productId"></p-sortIcon></th>
+        <th pSortableColumn="qty">Quantity <p-sortIcon field="qty"></p-sortIcon></th>
+        <th pSortableColumn="toLocationId">Location <p-sortIcon field="toLocationId"></p-sortIcon></th>
+        <th pSortableColumn="timestamp">Timestamp <p-sortIcon field="timestamp"></p-sortIcon></th>
       </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let entry of sortedItems" class="hover:bg-gray-50">
+      <tr>
+        <th>
+          <input pInputText type="text" (input)="dt.filter(($event.target as HTMLInputElement).value, 'productId', 'contains')" placeholder="Filter" class="w-full" />
+        </th>
+        <th>
+          <input pInputText type="text" (input)="dt.filter(($event.target as HTMLInputElement).value, 'qty', 'contains')" placeholder="Filter" class="w-full" />
+        </th>
+        <th>
+          <input pInputText type="text" (input)="dt.filter(($event.target as HTMLInputElement).value, 'toLocationId', 'contains')" placeholder="Filter" class="w-full" />
+        </th>
+        <th>
+          <input pInputText type="text" (input)="dt.filter(($event.target as HTMLInputElement).value, 'timestamp', 'contains')" placeholder="Filter" class="w-full" />
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-entry>
+      <tr>
         <td class="border px-4 py-2">{{ entry.productId }}</td>
         <td class="border px-4 py-2">{{ entry.qty }}</td>
         <td class="border px-4 py-2">{{ entry.toLocationId }}</td>
         <td class="border px-4 py-2">{{ entry.timestamp | date : 'medium' }}</td>
       </tr>
-    </tbody>
-  </table>
-
-  <p *ngIf="sortedItems.length === 0" class="text-gray-500 mt-4">
-    No stock has been received yet.
-  </p>
+    </ng-template>
+  </p-table>
 </div>

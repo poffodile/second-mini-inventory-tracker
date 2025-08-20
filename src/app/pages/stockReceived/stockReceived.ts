@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TableModule } from 'primeng/table';
+import { InputTextModule } from 'primeng/inputtext';
 import { DataService } from '../../services/data';
 import { Movement } from '../../interfaceTypes/Movement';
 
 @Component({
   selector: 'app-stock-received',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TableModule, InputTextModule],
   templateUrl: './stockReceived.html',
   styleUrls: ['./stockReceived.css'],
 })
