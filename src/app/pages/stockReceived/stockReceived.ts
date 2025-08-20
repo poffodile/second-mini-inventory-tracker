@@ -68,4 +68,23 @@ export class StockReceived implements OnInit {
       this.sort(this.sortField as keyof Movement);
     }
   }
+
+  onSortFieldChange(field: string): void {
+    this.sortField = (field as keyof Movement) || '';
+    this.applyFilters();
+  }
+
+  onSortDirectionChange(direction: 'asc' | 'desc'): void {
+    this.sortDirection = direction;
+    if (this.sortField) {
+      this.sort(this.sortField as keyof Movement);
+    }
+  }
+
+  clearFilters(): void {
+    this.filterText = '';
+    this.sortField = '';
+    this.sortDirection = 'asc';
+    this.applyFilters();
+  }
 }

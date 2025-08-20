@@ -18,6 +18,8 @@ export class Receive implements OnInit {
   receivedItems: ReceivedItem[] = [];
   summarySortField: keyof ReceivedItem | '' = '';
   summarySortDirection: 'asc' | 'desc' = 'asc';
+  summaryFilterText: string = '';
+  filteredSummary: ReceivedItem[] = [];
 
   productId: string = '';
   quantity: number = 1;
@@ -41,6 +43,7 @@ export class Receive implements OnInit {
       fromLocationId: m.fromLocationId,
       qty: m.qty,
     }));
+    this.applySummaryFilters();
   }
 
   submitForm(): void {
@@ -82,14 +85,16 @@ export class Receive implements OnInit {
     this.dataService.setData('stockLedger', ledger);
 
     // 3) Immediately reflect in the on-page summary
-    this.receivedItems.unshift({
+    const added = {
       productId: this.productId,
       quantity: this.quantity,
       locationId: this.locationId,
       timestamp: now,
       toLocationId: this.locationId,
       qty: this.quantity,
-    });
+    } as ReceivedItem;
+    this.receivedItems.unshift(added);
+    this.applySummaryFilters();
 
     alert('Goods received and recorded!');
     this.resetForm();
@@ -109,7 +114,7 @@ export class Receive implements OnInit {
       this.summarySortDirection = 'asc';
     }
 
-    this.receivedItems.sort((a, b) => {
+    this.filteredSummary.sort((a, b) => {
       const aValue = a[field];
       const bValue = b[field];
 
@@ -122,5 +127,45 @@ export class Receive implements OnInit {
       if (aStr > bStr) return this.summarySortDirection === 'asc' ? 1 : -1;
       return 0;
     });
+  }
+
+  applySummaryFilters(): void {
+    const text = this.summaryFilterText.trim().toLowerCase();
+    if (!text) {
+      this.filteredSummary = [...this.receivedItems];
+    } else {
+      this.filteredSummary = this.receivedItems.filter((i) => {
+        const productMatch = i.productId.toLowerCase().includes(text);
+        const locationMatch = i.locationId.toLowerCase().includes(text);
+        const qtyMatch = String(i.quantity ?? '').toLowerCase().includes(text);
+        const timeMatch = (i.timestamp || '').toLowerCase().includes(text);
+        return productMatch || locationMatch || qtyMatch || timeMatch;
+      });
+    }
+
+    if (this.summarySortField) {
+      this.sortSummary(this.summarySortField as keyof ReceivedItem);
+    }
+  }
+
+  onSummarySortFieldChange(field: string): void {
+    this.summarySortField = (field as keyof ReceivedItem) || '';
+    if (this.summarySortField) {
+      this.sortSummary(this.summarySortField as keyof ReceivedItem);
+    }
+  }
+
+  onSummarySortDirectionChange(direction: 'asc' | 'desc'): void {
+    this.summarySortDirection = direction;
+    if (this.summarySortField) {
+      this.sortSummary(this.summarySortField as keyof ReceivedItem);
+    }
+  }
+
+  clearSummaryFilters(): void {
+    this.summaryFilterText = '';
+    this.summarySortField = '';
+    this.summarySortDirection = 'asc';
+    this.applySummaryFilters();
   }
 }

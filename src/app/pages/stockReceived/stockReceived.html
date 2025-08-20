@@ -8,6 +8,25 @@
       placeholder="Filter by product, location, qty, or time"
       class="border px-3 py-2 w-full max-w-md"
     />
+    <div class="mt-3 flex flex-wrap gap-3 items-center">
+      <label class="text-sm">Sort by:</label>
+      <select class="border px-2 py-1" [ngModel]="sortField" (ngModelChange)="onSortFieldChange($event)">
+        <option [ngValue]="''">None</option>
+        <option [ngValue]="'productId'">Product ID</option>
+        <option [ngValue]="'qty'">Quantity</option>
+        <option [ngValue]="'toLocationId'">Location</option>
+        <option [ngValue]="'timestamp'">Timestamp</option>
+      </select>
+
+      <select class="border px-2 py-1" [ngModel]="sortDirection" (ngModelChange)="onSortDirectionChange($event)">
+        <option [ngValue]="'asc'">Ascending</option>
+        <option [ngValue]="'desc'">Descending</option>
+      </select>
+
+      <button type="button" (click)="clearFilters()" class="border px-3 py-2 rounded bg-gray-100 hover:bg-gray-200">
+        Clear
+      </button>
+    </div>
   </div>
 
   <table class="table-auto w-full border border-collapse">

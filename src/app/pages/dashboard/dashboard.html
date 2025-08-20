@@ -1,17 +1,78 @@
-<div class="p-6 space-y-4">
-  <h1 class="text-2xl font-bold">Warehouse Dashboard</h1>
+<div class="p-6 space-y-6">
+  <div class="flex flex-wrap items-center gap-3">
+    <h1 class="text-2xl font-bold">Inventory Dashboard</h1>
+    <div class="ml-auto flex gap-2">
+      <button (click)="loadData()" class="px-3 py-2 bg-green-600 text-white rounded">Load Demo</button>
+      <button (click)="clearData()" class="px-3 py-2 bg-red-600 text-white rounded">Clear</button>
+      <button (click)="refresh()" class="px-3 py-2 bg-gray-200 rounded">Refresh</button>
+    </div>
+  </div>
 
-  <button
-    (click)="loadData()"
-    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-  >
-    Load Demo Data
-  </button>
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Total SKUs</div>
+      <div class="text-2xl font-semibold">{{ totalSkus }}</div>
+    </div>
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Total On‑Hand</div>
+      <div class="text-2xl font-semibold">{{ totalOnHand }}</div>
+    </div>
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Low‑Stock Items</div>
+      <div class="text-2xl font-semibold">{{ lowStockCount }}</div>
+    </div>
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Inbound Today</div>
+      <div class="text-2xl font-semibold">{{ inboundToday }}</div>
+    </div>
+    <div class="p-4 bg-white rounded shadow">
+      <div class="text-sm text-gray-500">Outbound Today</div>
+      <div class="text-2xl font-semibold">{{ outboundToday }}</div>
+    </div>
+  </div>
 
-  <button
-    (click)="loadData()"
-    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-700"
-  >
-    <span> Load Demo Data</span>
-  </button>
+  <div class="flex flex-wrap gap-3">
+    <a routerLink="/receive" class="px-3 py-2 bg-blue-600 text-white rounded">Receive Goods</a>
+    <a routerLink="/stock-received" class="px-3 py-2 bg-gray-800 text-white rounded">Stock Received</a>
+    <a routerLink="/inventory" class="px-3 py-2 bg-gray-200 rounded">Inventory</a>
+    <a routerLink="/import" class="px-3 py-2 bg-gray-200 rounded">Import</a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded shadow">
+      <div class="p-4 border-b font-medium">Recent Movements</div>
+      <div class="p-4 overflow-auto">
+        <table class="table-auto w-full border border-collapse">
+          <thead>
+            <tr>
+              <th class="px-3 py-2 text-left">Time</th>
+              <th class="px-3 py-2 text-left">Type</th>
+              <th class="px-3 py-2 text-left">Product</th>
+              <th class="px-3 py-2 text-left">Qty</th>
+              <th class="px-3 py-2 text-left">From → To</th>
+              <th class="px-3 py-2 text-left">Ref</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of recentMovements" class="hover:bg-gray-50">
+              <td class="border px-3 py-2">{{ m.timestamp | date : 'short' }}</td>
+              <td class="border px-3 py-2">{{ m.type }}</td>
+              <td class="border px-3 py-2">{{ m.productId }}</td>
+              <td class="border px-3 py-2">{{ m.qty }}</td>
+              <td class="border px-3 py-2">{{ m.fromLocationId || '-' }} → {{ m.toLocationId || '-' }}</td>
+              <td class="border px-3 py-2">{{ m.ref }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="bg-white rounded shadow">
+      <div class="p-4 border-b font-medium">Low‑Stock (≤ 5)</div>
+      <div class="p-4">
+        <p *ngIf="lowStockCount === 0" class="text-gray-500">No low‑stock items.</p>
+        <p *ngIf="lowStockCount > 0" class="text-gray-700">Use Inventory or Adjustments to review.</p>
+      </div>
+    </div>
+  </div>
 </div>

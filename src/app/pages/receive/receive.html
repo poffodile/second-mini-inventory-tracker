@@ -55,8 +55,34 @@
 <div class="mt-8">
   <h2 class="text-xl font-semibold mb-2">Received Goods Summary</h2>
 
-  <table class="min-w-full border border-gray-300 divide-y divide-gray-200">
-    <thead class="bg-gray-100">
+  <div class="mb-3 flex flex-wrap gap-3 items-center">
+    <input
+      type="text"
+      [(ngModel)]="summaryFilterText"
+      (ngModelChange)="applySummaryFilters()"
+      placeholder="Search by product, location, qty, or time"
+      class="border px-3 py-2 w-full max-w-md"
+    />
+    <label class="text-sm">Sort by:</label>
+    <select class="border px-2 py-1" [ngModel]="summarySortField" (ngModelChange)="onSummarySortFieldChange($event)">
+      <option [ngValue]="''">None</option>
+      <option [ngValue]="'productId'">Product ID</option>
+      <option [ngValue]="'quantity'">Quantity</option>
+      <option [ngValue]="'locationId'">Location</option>
+      <option [ngValue]="'timestamp'">Timestamp</option>
+    </select>
+    <select class="border px-2 py-1" [ngModel]="summarySortDirection" (ngModelChange)="onSummarySortDirectionChange($event)">
+      <option [ngValue]="'asc'">Ascending</option>
+      <option [ngValue]="'desc'">Descending</option>
+    </select>
+
+    <button type="button" (click)="clearSummaryFilters()" class="border px-3 py-2 rounded bg-gray-100 hover:bg-gray-200">
+      Clear
+    </button>
+  </div>
+
+  <table class="table-auto w-full border border-collapse">
+    <thead>
       <tr>
         <th class="px-4 py-2 cursor-pointer" (click)="sortSummary('productId')">Product ID</th>
         <th class="px-4 py-2 cursor-pointer" (click)="sortSummary('quantity')">Quantity</th>
@@ -65,16 +91,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of receivedItems" class="hover:bg-gray-50">
-        <td class="px-4 py-2">{{ item.productId }}</td>
-        <td class="px-4 py-2">{{ item.quantity }}</td>
-        <td class="px-4 py-2">{{ item.locationId }}</td>
-        <td class="px-4 py-2">{{ item.timestamp | date : 'short' }}</td>
+      <tr *ngFor="let item of filteredSummary" class="hover:bg-gray-50">
+        <td class="border px-4 py-2">{{ item.productId }}</td>
+        <td class="border px-4 py-2">{{ item.quantity }}</td>
+        <td class="border px-4 py-2">{{ item.locationId }}</td>
+        <td class="border px-4 py-2">{{ item.timestamp | date : 'medium' }}</td>
       </tr>
     </tbody>
   </table>
 
-  @if (receivedItems.length === 0) {
+  @if (filteredSummary.length === 0) {
   <p class="text-gray-500 mt-2">No goods have been received yet.</p>
   }
 </div>
